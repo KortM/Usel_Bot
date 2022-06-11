@@ -50,13 +50,5 @@ def message_handler(message):
             bot.send_message(message.chat.id, 'Информация по узлу не найдена!')
 
 if __name__ == '__main__':
-    path = ''
-    '''response = input('Задаем путь в ручную?\nВведите путь к файлу базы узлов, включая формат файла xlsx: ')
-    if response == 'no':
-        #path = '//home//kort//usel-bot//usel_bot//file.xlsx'
-        path = 'file.xlsx'
-    else:
-        path = response'''
-    path = '/home/kort/usel-bot/Usel_Bot/file.xlsx'
-    worker.start(path)
+    worker.start()
     bot.polling(none_stop=True)

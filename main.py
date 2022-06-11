@@ -1,38 +1,39 @@
-from concurrent.futures import thread
 import os
-from tabnanny import check
 import time
-from unicodedata import name
 from bd import Session, Usel, engine, Base, User_session, User, AccessUsers
 import openpyxl
 import schedule 
 import threading
 from datetime import date
+from server_socket import main
 
 class Worker:
 
     def __init__(self) -> None:
-        self.file_path = ''
+        self.filename = 'baza.xlsx'
 
     def upload_file(self) -> str:
         '''
             Открываем файл с узлами и пишем в БД
         '''
-        session = Session()
-        wookbook = openpyxl.load_workbook(self.file_path)
-        sheet = wookbook.active
-        #print(sheet.max_row)
-        count = 0
-        for i in range(0, sheet.max_row):
-            tmp = []
-            for col in sheet.iter_cols(1, sheet.max_column):
-                tmp.append(str(col[i].value))
-            usel = Usel(description = ''.join(tmp))
-            session.add(usel)
-            session.commit()
-            count +=1
-            if sheet.max_row % count == 0:
-                print('Обновление: {}%'.format((count / sheet.max_row * 100)))
+        basedir =os.path.abspath(os.path.dirname(__file__))
+        if os.path.exists(f'{basedir}/{self.filename}'):
+            session = Session()
+            wookbook = openpyxl.load_workbook(self.filename)
+            sheet = wookbook.active
+            count = 0
+            for i in range(0, sheet.max_row):
+                tmp = []
+                for col in sheet.iter_cols(1, sheet.max_column):
+                    tmp.append(str(col[i].value))
+                usel = Usel(description = ''.join(tmp))
+                session.add(usel)
+                session.commit()
+                count +=1
+                if sheet.max_row % count == 0:
+                    print('Обновление: {}%'.format((count / sheet.max_row * 100)))
+        else:
+            print('Обновление не удалось, файл отсутсвует!')
 
     def find_data(self, name: str) -> list:
         '''
@@ -50,23 +51,26 @@ class Worker:
             Перед запуском убираем БД и создаем новую, пустую. 
         '''
         try:
-            os.remove('BD.db')
-            Base.metadata.create_all(engine)
+            session = Session()
+            session.query(Usel).delete()
+            session.commit()
+            #Base.metadata.create_all(engine)
         except Exception:
-            pass
+            print('Не удалось очистить БД узлов')
 
-    def start(self, path: str) -> None:
+    def start(self) -> None:
         '''
             Запуск:
             1. Указываем путь к файлу,
             2. Убираем базу, если она есть и создаем новую,
             3. Заполняем БД. 
         '''
-        self.file_path = path
         self.drop_data()
         self.upload_file()
         thread = threading.Thread(target=self.auto_clean_user_sessions, args=())
         thread.start()
+        server_thread = threading.Thread(target=main, args=())
+        server_thread.start()
 
     def auto_clean_user_sessions(self):
         '''
@@ -118,3 +122,7 @@ class Worker:
                 session.commit()
                 return True
         return False
+
+if __name__ == '__main__':
+    w = Worker()
+    w.start()
