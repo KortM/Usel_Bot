@@ -28,7 +28,7 @@ def check_password(message, name):
         bot.register_next_step_handler(message, check_login)
 
 def check_login(message):
-    name = message.text
+    name = message.text.lower()
     bot.send_message(message.chat.id, "Принято!\nТеперь введите пароль: ")
     bot.register_next_step_handler(message, check_password, name)
     
@@ -51,11 +51,12 @@ def message_handler(message):
 
 if __name__ == '__main__':
     path = ''
-    response = input('Задаем путь в ручную?\nВведите путь к файлу базы узлов, включая формат файла xlsx: ')
+    '''response = input('Задаем путь в ручную?\nВведите путь к файлу базы узлов, включая формат файла xlsx: ')
     if response == 'no':
-        #path = '//home//kort//usel-bot//Usel_Bot//file.xlsx'
+        #path = '//home//kort//usel-bot//usel_bot//file.xlsx'
         path = 'file.xlsx'
     else:
-        path = response
+        path = response'''
+    path = '/home/kort/usel-bot/Usel_Bot/file.xlsx'
     worker.start(path)
     bot.polling(none_stop=True)

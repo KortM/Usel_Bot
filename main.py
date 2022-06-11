@@ -40,10 +40,10 @@ class Worker:
         '''
         session = Session()
         result = session.query(Usel).filter(Usel.description.like('%{}%'.format(name))).all()
-        if result:
+        if result and (result[0].lenght() > 1):
             return result
         else:
-            return 'Узел не найден!'
+            return ['Узел не найден!']
     
     def drop_data(self) -> str:
         '''

@@ -6,10 +6,10 @@ from sqlalchemy.orm import sessionmaker
 import hashlib, uuid
 
 usel_db = 'BD.db'
-basedir =os.path.abspath(os.path.dirname(__file__))
-engine = create_engine("sqlite:///{}/{}".format(basedir, usel_db), connect_args={'check_same_thread': False})
+#basedir =os.path.abspath(os.path.dirname(__file__))
+engine = create_engine("sqlite:///{}".format(usel_db), connect_args={'check_same_thread': False})
 users_db = 'Users.db'
-user_engine = create_engine("sqlite:///{}/{}".format(basedir, users_db), connect_args={'check_same_thread': False})
+user_engine = create_engine("sqlite:///{}".format(users_db), connect_args={'check_same_thread': False})
 Base = declarative_base()
 Session =sessionmaker(bind= engine)
 User_session = sessionmaker(bind=user_engine)
@@ -26,6 +26,9 @@ class Usel(Base):
 
     def __repr__(self):
         return "{0}".format(self.description)
+
+    def lenght(self):
+        return len(self.description)
 
 class User(Base):
 
