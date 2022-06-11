@@ -14,7 +14,7 @@ def main():
     context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     #context.load_cert_chain(certfile='/home/kort/usel-bot/Usel_Bot/cert.pem', keyfile='/home/kort/usel-bot/Usel_Bot/key.pem')
     basedir = os.path.abspath(os.path.dirname(__file__))
-    context.load_cert_chain(certfile=f'{basedir}/cert/cert.pem', keyfile=f'{basedir}/cert/key.pem', password='mar02031812')
+    context.load_cert_chain(certfile=f'{basedir}/cert/cert.pem', keyfile=f'{basedir}/cert/key.pem', password='yourpassword')
 
     bindsocket = socket.socket()
     bindsocket.bind(('127.0.0.1', 10023))
